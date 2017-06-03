@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <title>Neighborhood Map</title>
+</head>
+
+<body>
+    <nav id="drawer">
+        <div id="searchmenu">
+            <div id="project">
+                <h3>list of football clubs in Riyadh</h3>
+            </div>
+            <input id="searchbox" placeholder="Search..." type="search" data-bind="textInput: query"></input>
+            <div id="menu">
+                <ul data-bind="foreach: search()" id="list">
+                    <a>
+                        <li data-bind="text: name, click: $parent.setLocation"></li>
+                    </a>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <a id="burgMenu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M2 6h20v3H2zm0 5h20v3H2zm0 5h20v3H2z"></path>
+            <h4 id="searchText">Search</h4>
+        </svg>
+    </a>
+    <main id="map"></main>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAVX7D5R-5yKjAwLP7WK3ZnXF_bS6unc84&callback=initMap"
+type="text/javascript"></script>
+
+</body>
+
+</html>
