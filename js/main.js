@@ -1,31 +1,37 @@
 /** Set up object array to be used later by map, markers, and list
  */
-var locations = [{
-  name: 'Al-Hilal FC',
+var locations = [{name: 'Al-Hilal FC',
   lat:24.605675,
-  lng:46.624572
+  lng:46.624572,
+  foursquare:'4f268b9de4b0dc27bb7e465b',
+  info:''
 }, {
     name: 'Al-Nassr FC',
     lat:24.580205,
-    lng:46.558291
+    lng:46.558291,
+    foursquare:'4f37fbb7e4b099ca94f8196c'
 }, {
   name: 'Al Shabab FC',
   lat:24.802999,
-  lng:46.6277
+  lng:46.6277,
+  foursquare:'4fa299bde4b0857bbd894678'
 }, {
   name: 'Al-Riyadh SC',
   lat:24.647689,
-  lng:46.550882
+  lng:46.550882,
+  foursquare:'4f58cc0ae4b0db97b75b7836'
 },
 {
   name: 'Al-Shoulla FC',
   lat: 24.165818,
-  lng:47.347354
+  lng:47.347354,
+  foursquare:'4fb26721e4b00dd091c57878'
 },
 {
   name: 'Al-Faisaly FC',
   lat:25.928626,
-  lng:45.33401
+  lng:45.33401,
+  foursquare:'4efc7e9ff9ab0847fa0e1a7e'
 }
 ];
 
@@ -87,10 +93,9 @@ var viewModel = function() {
 
 };
 
-function nonce_generate() {
-    return (Math.floor(Math.random() * 1e12).toString());
-}
-var map, bounds;
+
+var map, bounds,address;
+
 /** Main map function that zooms in and centers it at specific location due to the given
  * coordinates.  Also displays the map in the respective div.
  */
@@ -103,6 +108,20 @@ function initMap() {
     var infowindow = new google.maps.InfoWindow();
 
 
+    for (var i = 0; i < locations.length; i++) {
+      $.ajax({url: "https://api.foursquare.com/v2/venues/"+locations[i].foursquare+"?oauth_token=1BPFNYSBF5HJST03ZWMNHYWD0B302DP31KIJICVKNOSZGPBW&v=20170606", success: function(result){
+                     address = result.response.venue.location.address;
+                     
+                     infowindow.setContent( address );
+                  },
+                  error: function () {
+                      infowindow.setContent('<h5>Error when loading google maps, please try later </h5>');
+                  }
+                });
+
+
+
+    }
 
     /** Marker gets created on map with a falling animation and positioned in respective coordinates from locations array up top.
      */
@@ -120,6 +139,9 @@ function initMap() {
          */
         google.maps.event.addListener(marker, 'click', function() {
             html = '<h3>' + location.name + '</h3>';
+
+            html +='address : '+ address;
+
             infowindow.setContent(html);
             infowindow.open(map, this);
             toggleBounce(marker);
