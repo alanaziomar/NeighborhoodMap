@@ -111,15 +111,15 @@ function initMap() {
     for (var i = 0; i < locations.length; i++) {
       $.ajax({url: "https://api.foursquare.com/v2/venues/"+locations[i].foursquare+"?oauth_token=1BPFNYSBF5HJST03ZWMNHYWD0B302DP31KIJICVKNOSZGPBW&v=20170606", success: function(result){
                      address = result.response.venue.location.address;
-                     
+                     //get the rating and set it on the infowindow content
                      infowindow.setContent( address );
                   },
                   error: function () {
                       infowindow.setContent('<h5>Error when loading google maps, please try later </h5>');
                   }
                 });
-
-
+                 // add each infowindow in the locations array
+                  locations[i].info = infowindow;
 
     }
 
