@@ -111,20 +111,8 @@ function initMap() {
     bounds = new google.maps.LatLngBounds();
     var infowindow =  new google.maps.InfoWindow();
 
-for ( var i = 0 ; i < locations.length ; i++){
-$.getJSON( "https://api.foursquare.com/v2/venues/"+ locations[i].foursquare+"?oauth_token=2FRVEDZNXHEYMTULHDNOOW13BMC14Z2BFFFQCMLYMSSIRMZ1&v=20131016")
-  .done(function( json ) {
 
-    result = json.response.venue.location.address;
-  //  sContent = '<p>' + result +'</p>';
-  //  infowindow.setContent(result)
-  //  console.log( "JSON Data: " + result );
-  })
-  .fail(function( jqxhr, textStatus, error ) {
-    var err = textStatus + ", " + error;
-    console.log( "Request Failed: " + err );
-});
-}
+
     /** Marker gets created on map with a falling animation and positioned in respective coordinates from locations array up top.
      */
     function createMarker(location) {
@@ -133,10 +121,20 @@ $.getJSON( "https://api.foursquare.com/v2/venues/"+ locations[i].foursquare+"?oa
             map: map,
             animation: google.maps.Animation.DROP,
             position: latlng,
-             info:     sContent
 
         });
+        $.getJSON( "https://api.foursquare.com/v2/venues/4fb26721e4b00dd091c57878?oauth_token=2FRVEDZNXHEYMTULHDNOOW13BMC14Z2BFFFQCMLYMSSIRMZ1&v=20131016")
+          .done(function( json ) {
 
+            result = json.response.venue.location.address;
+          //  sContent = '<p>' + result +'</p>';
+          //  infowindow.setContent(result)
+            console.log( "JSON Data: " + result );
+          })
+          .fail(function( jqxhr, textStatus, error ) {
+            var err = textStatus + ", " + error;
+            console.log( "Request Failed: " + err );
+        });
         bounds.extend(marker.position);
 
         /** When marker gets clicked on, it toggles bouncing animation and info window pops up
