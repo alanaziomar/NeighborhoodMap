@@ -1,44 +1,44 @@
 /** Set up object array to be used later by map, markers, and list
  */
-var locations = [{name: 'Al-Hilal FC',
+var locations = [{
+  name: 'Al-Hilal FC',
   lat:24.605675,
   lng:46.624572,
-  foursquare:'4f268b9de4b0dc27bb7e465b',
-  info:''
+  foursquare:"4f268b9de4b0dc27bb7e465b"
 }, {
     name: 'Al-Nassr FC',
     lat:24.580205,
     lng:46.558291,
-    foursquare:'4f37fbb7e4b099ca94f8196c'
+    foursquare:"4f37fbb7e4b099ca94f8196c"
 }, {
   name: 'Al Shabab FC',
   lat:24.802999,
   lng:46.6277,
-  foursquare:'4fa299bde4b0857bbd894678'
+  foursquare:"4fa299bde4b0857bbd894678"
 }, {
   name: 'Al-Riyadh SC',
   lat:24.647689,
   lng:46.550882,
-  foursquare:'4f58cc0ae4b0db97b75b7836'
+  foursquare:"4f58cc0ae4b0db97b75b7836"
 },
 {
   name: 'Al-Shoulla FC',
   lat: 24.165818,
   lng:47.347354,
-  foursquare:'4fb26721e4b00dd091c57878'
+  foursquare:"4fb26721e4b00dd091c57878"
 },
 {
   name: 'Al-Faisaly FC',
   lat:25.928626,
   lng:45.33401,
-  foursquare:'4efc7e9ff9ab0847fa0e1a7e'
+  foursquare:"4efc7e9ff9ab0847fa0e1a7e"
 }
 ];
 
 var Location = function(data) {
     this.name = ko.observable(data.name);
-    this.lat = ko.observable(data.lat);
-    this.lng = ko.observable(data.lng);
+    this.latlng = ko.observable(data.location);
+
 };
 
 /** Considering how 'this' changes in every scope, 'self' will preserve
@@ -93,36 +93,38 @@ var viewModel = function() {
 
 };
 
+var result ;
+//var infowindow = new google.maps.InfoWindow({});
 
-var map, bounds,address;
 
+var map, bounds,sContent;
 /** Main map function that zooms in and centers it at specific location due to the given
  * coordinates.  Also displays the map in the respective div.
  */
+
+
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 13,
         center: new google.maps.LatLng(24.713552, 46.675296)
     });
     bounds = new google.maps.LatLngBounds();
-    var infowindow = new google.maps.InfoWindow();
+    var infowindow =  new google.maps.InfoWindow();
 
+for ( var i = 0 ; i < locations.length ; i++){
+$.getJSON( "https://api.foursquare.com/v2/venues/"+ locations[i].foursquare+"?oauth_token=2FRVEDZNXHEYMTULHDNOOW13BMC14Z2BFFFQCMLYMSSIRMZ1&v=20131016")
+  .done(function( json ) {
 
-    for (var i = 0; i < locations.length; i++) {
-      $.ajax({url: "https://api.foursquare.com/v2/venues/"+locations[i].foursquare+"?oauth_token=1BPFNYSBF5HJST03ZWMNHYWD0B302DP31KIJICVKNOSZGPBW&v=20170606", success: function(result){
-                     address = result.response.venue.location.address;
-                     //get the rating and set it on the infowindow content
-                     infowindow.setContent( address );
-                  },
-                  error: function () {
-                      infowindow.setContent('<h5>Error when loading google maps, please try later </h5>');
-                  }
-                });
-                 // add each infowindow in the locations array
-                  locations[i].info = infowindow;
-
-    }
-
+    result = json.response.venue.location.address;
+  //  sContent = '<p>' + result +'</p>';
+  //  infowindow.setContent(result)
+  //  console.log( "JSON Data: " + result );
+  })
+  .fail(function( jqxhr, textStatus, error ) {
+    var err = textStatus + ", " + error;
+    console.log( "Request Failed: " + err );
+});
+}
     /** Marker gets created on map with a falling animation and positioned in respective coordinates from locations array up top.
      */
     function createMarker(location) {
@@ -130,20 +132,23 @@ function initMap() {
         var marker = new google.maps.Marker({
             map: map,
             animation: google.maps.Animation.DROP,
-            position: latlng
+            position: latlng,
+             info:     sContent
+
         });
 
         bounds.extend(marker.position);
 
         /** When marker gets clicked on, it toggles bouncing animation and info window pops up
          */
-        google.maps.event.addListener(marker, 'click', function() {
-            html = '<h3>' + location.name + '</h3>';
 
-            html +='address : '+ address;
+        google.maps.event.addListener(marker, 'click', function() {
+        //  infowindow.close();
+            html = '<h3>' + location.name + '</h3>';
+          html +='<p> location address : '+  result + '</p>';
 
             infowindow.setContent(html);
-            infowindow.open(map, this);
+            infowindow.open(map, marker);
             toggleBounce(marker);
         });
 
